@@ -266,21 +266,6 @@ void PBD::neighborhood_search()
 	glDispatchCompute(workGroupNum, 1, 1);
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-	/*std::vector<unsigned> test(particleNum);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, countSSBO);
-	void* read = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-	if (read == nullptr)
-	{
-		std::cerr << "read error!" << std::endl;
-	}
-	else
-	{
-		memcpy(test.data(), read, sortSize);
-	}
-	if (!glUnmapBuffer(GL_SHADER_STORAGE_BUFFER))
-		std::cerr << "unMap error" << std::endl;
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);*/
-
 	for (auto& rb : rigidBodies)
 		rb->neighborhood_search();
 
@@ -356,23 +341,6 @@ void PBD::update_particle()
 		cloth->bind_buffers();
 		
 		cloth->update_position();
-
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleSSBO);
-		Particle* read = reinterpret_cast<Particle*>(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
-		if (read == nullptr)
-		{
-			std::cerr << "read error!" << std::endl;
-		}
-		else
-		{
-			for (unsigned i = 0; i < cloth->particleNr; i++)
-			{
-				cloth->particles[i].x = read[cloth->head + i].x;
-			}
-		}
-		if (!glUnmapBuffer(GL_SHADER_STORAGE_BUFFER))
-			std::cerr << "unMap error" << std::endl;
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
 	for (auto& fluid : fluids)

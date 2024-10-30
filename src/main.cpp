@@ -14,9 +14,6 @@
 #include "Model.h"
 #include "Light.h"
 
-#include "Particle.h"
-#include "RigidBody.h"
-#include "Cloth.h"
 #include "PBD.h"
 
 float lastX = Global::screenWidth / 2.f, lastY = Global::screenHeight / 2.f;
@@ -84,54 +81,13 @@ int main()
 	Global::init();
 	PBD pbd;
 
-	Model* mModel = new Model("D:/Assets/Model/cloth/cloth.obj");
 	Model* Cube = new Model("asset/model/Cube.obj");
-	Model* bunny = new Model("D:/Unity project/games103/Assets/bunny.obj");
-	Sphere sphere(glm::vec3(0.f, -1.f, 0.f), 0.5f);
-	sphere.generate_mesh(16, 32);
-
-	auto create_cloth = []() {
-		unsigned int n = 21;
-		std::vector<glm::vec3> vertices(n * n);
-		std::vector<glm::vec2> texCoords(n * n);
-		std::vector<unsigned int> indices((n - 1) * (n - 1) * 6);
-		
-		for (unsigned int i = 0; i < n ; i++)
-			for (unsigned int j = 0; j < n; j++)
-			{
-				vertices[j * n + i] = glm::vec3(5 - 10.f * i / (n - 1), 0.f, 5 - 10.f * j / (n - 1));
-				texCoords[j * n + i] = glm::vec2(i / (n - 1.f), j / (n - 1.f));
-			}
-
-		unsigned int t = 0;
-		for (unsigned int i = 0; i < n - 1; i++)
-			for (unsigned int j = 0; j < n - 1; j++)
-			{
-				indices[t * 6 + 0] = j * n + i;
-				indices[t * 6 + 1] = j * n + i + 1;
-				indices[t * 6 + 2] = (j + 1) * n + i + 1;
-				indices[t * 6 + 3] = j * n + i;
-				indices[t * 6 + 4] = (j + 1) * n + i + 1;
-				indices[t * 6 + 5] = (j + 1) * n + i;
-				t++;
-			}
-
-		Mesh* mesh = new Mesh("cloth");
-		/*mesh->set_vertices(vertices);
-		mesh->set_texCoords(texCoords);
-		mesh->set_indices(indices);*/
-
-		return mesh;
-		};
-	Mesh* clothMesh = create_cloth();
-	//clothMesh->recalculate_normals();
+	Model* bunny = new Model("asset/model/bunny.obj");
 
 	RigidBody rb1(bunny->find_mesh("defaultobject"));
-	Cloth cloth(mModel->find_mesh("cloth"));
 	Fluid water(Cube->find_mesh("Cube"));
 
 	pbd.add_rigid_body(&rb1);
-	pbd.add_cloth(&cloth);
 	pbd.add_fluid(&water);
 	pbd.init();
 
@@ -210,22 +166,8 @@ int main()
 		spotLight.setup(shader);
 
 		if (launch)
-		{
 			pbd.update(Global::deltaTime);
-		}
-		//pbd.draw(shader);
-
-		for (unsigned i = 0; i < cloth.particleNr; i++)
-		{
-			model = glm::mat4(1.f);
-			model = glm::translate(model, cloth.particles[i].x);
-			model = glm::scale(model, glm::vec3(2 * Particle::radius));
-			shader.use();
-			shader.set_mat4("model", model);
-			shader.set_mat4("view", view);
-			shader.set_mat4("projection", projection);
-			sphere.mesh->draw(shader);
-		}
+		pbd.draw(shader);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

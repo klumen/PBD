@@ -152,21 +152,4 @@ private:
 
 };
 
-class Sphere
-{
-public:
-	Sphere(const glm::vec3& position = glm::vec3(0.f), float radius = 1.f);
-	~Sphere();
-
-	void generate_mesh(unsigned int ringNum = 16, unsigned int segmentNum = 32);
-
-	glm::vec3 position{0.f};
-	float radius = 0.f;
-
-	Mesh* mesh = nullptr;
-
-private:
-
-};
-
 #endif // !MESH_H
