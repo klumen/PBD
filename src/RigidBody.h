@@ -40,7 +40,7 @@ public:
 
 	Mesh* mesh = nullptr;
 	glm::vec3 gravity{ 0.f, -9.8f, 0.f };
-	float mass = 30.f;
+	float mass = 1.f;
 
 	float deltaTime = 0.015f;
 
